@@ -6,6 +6,11 @@ trigger_url="${DEPLOYMENT_PIPELINE_TRIGGER_URL?no trigger url}"
 trigger_token="${DEPLOYMENT_PIPELINE_TRIGGER_TOKEN?no trigger token}"
 trigger_branch="${DEPLOYMENT_PIPELINE_TRIGGER_BRANCH:-main}"
 
+if [ -r "$trigger_token" ]
+then
+    trigger_token="$(< "$trigger_token")"
+fi
+
 branch="${CI_COMMIT_BRANCH:-}"
 tag="${CI_COMMIT_TAG:-}"
 
