@@ -3,12 +3,18 @@
 set -euo pipefail
 
 trigger_url="${DEPLOYMENT_PIPELINE_TRIGGER_URL?no trigger url}"
-trigger_token="${DEPLOYMENT_PIPELINE_TRIGGER_TOKEN?no trigger token}"
+trigger_token="${DEPLOYMENT_PIPELINE_TRIGGER_TOKEN:-"${CI_JOB_TOKEN:-}"}"
 trigger_branch="${DEPLOYMENT_PIPELINE_TRIGGER_BRANCH:-main}"
 
 if [ -r "$trigger_token" ]
 then
     trigger_token="$(< "$trigger_token")"
+fi
+
+if [ -z "$trigger_token" ]
+then
+    echo "No trigger token available!" >&2
+    exit 1
 fi
 
 branch="${CI_COMMIT_BRANCH:-}"
