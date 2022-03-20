@@ -1,6 +1,7 @@
 FROM alpine:edge
 
-RUN apk add --update --no-cache bash jq python3 docker-cli git curl openssh kubectl helm
+RUN apk add --update --no-cache bash jq python3 docker-cli git curl openssh
+RUN apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing kubectl helm
 
 COPY trigger.sh /usr/local/bin/trigger
 COPY discover-descriptors.sh /usr/local/bin/discover-descriptors
