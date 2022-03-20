@@ -16,3 +16,6 @@ COPY json-to-env.sh /usr/local/bin/json-to-env
 COPY combine-env.sh /usr/local/bin/combine-env
 COPY offset-ports.sh /usr/local/bin/offset-ports
 
+RUN mkdir /workspace
+WORKDIR /workspace
+
