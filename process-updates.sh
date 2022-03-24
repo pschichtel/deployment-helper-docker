@@ -86,16 +86,16 @@ update_env() {
         then
             echo "Commiting and pushing the changes ..."
             git config user.name 'Environment Update'
-            git config user.email "environment-update@$CI_SERVER_HOST"
+            git config user.email "environment-update@${CI_SERVER_HOST}"
             git add "$artifacts_file"
-            git commit -m "Environment updated!"
+            git commit -m "Environment updated from ${source_project} (branch ${source_branch})!"
             git push
             echo 'done.'
         else
             echo "Nothing actually changed with this update."
         fi
     else
-        echo "No existing $artifacts_file file found, nothing to update..."
+        echo "No existing ${artifacts_file} file found, nothing to update..."
     fi
     popd
     
