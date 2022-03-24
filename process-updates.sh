@@ -78,7 +78,7 @@ update_env() {
         jq -n \
             --slurpfile artifacts_slurp "$artifacts_file" \
             --slurpfile updates_slurp "$updates_file" \
-            '($artifacts_slurp | first) as $artifacts | $updates_slurp | first | map(select($artifacts[.name] != null)) | reduce .[] as $item ($artifacts; .[$item.name] = $item.descriptor)' \
+            '($artifacts_slurp | first) as $artifacts | $updates_slurp | first | reduce .[] as $item ($artifacts; .[$item.name] = $item.descriptor)' \
             > "$tmp_file"
         mv "$tmp_file" "$artifacts_file"
 
