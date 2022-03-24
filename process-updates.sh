@@ -4,8 +4,10 @@ set -euo pipefail
 
 update_script="${1?no update script}"
 
-source_project="${ARTIFACT_SOURCE:-}"
-source_ref="${ARTIFACT_SOURCE_REF:-}"
+source_project="${ARTIFACT_SOURCE_PROJECT:-}"
+source_branch="${ARTIFACT_SOURCE_BRANCH:-}"
+source_tag="${ARTIFACT_SOURCE_TAG:-}"
+source_commit="${ARTIFACT_SOURCE_COMMIT?no source commit}"
 
 if [ -z "$source_project" ]
 then
@@ -13,9 +15,9 @@ then
     exit 1
 fi
 
-if [ -z "$source_ref" ]
+if [ -z "$source_branch" ]
 then
-    echo "No source ref given!"
+    echo "No source branch given, the trigger source seems to have triggered from a DETACHED_HEAD: ${source_commit}"
     exit 1
 fi
 
@@ -34,12 +36,16 @@ fi
 artifact_count="$(jq 'length' < "$updates_file")"
 if [ "$artifact_count" = 0 ]
 then
-    echo "No source artifacts given!"
-    exit 1
+    echo "Received artifacts to update, nothing to do here!"
+    exit 0
 fi
 
 echo "Project:   $source_project"
-echo "Ref:       $source_ref"
+echo "Branch:    $source_branch"
+if [ -n "$source_tag" ]
+then
+    echo "Tag:       $source_tag"
+fi
 echo "Updates:   $(< "$updates_file")"
 
 update_token="$(< "${ENV_UPDATE_TOKEN?no update token}")"
@@ -93,6 +99,12 @@ update_env() {
     fi
     popd
     
+}
+
+apply_updates() {
+    local env="${1?no env}"
+
+    update_env "$env" "$updates_file"
 }
 
 source "$update_script"
