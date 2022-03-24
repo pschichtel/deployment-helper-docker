@@ -17,18 +17,9 @@ then
     exit 1
 fi
 
+commit="${CI_COMMIT_SHA?no commit}"
 branch="${CI_COMMIT_BRANCH:-}"
 tag="${CI_COMMIT_TAG:-}"
-
-if [ -n "$branch" ]
-then
-    ref="branch/$branch"
-elif [ -n "$tag" ]
-then
-    ref="tag/$tag"
-else
-    ref="commit/$CI_COMMIT_SHA"
-fi
 
 project="$CI_PROJECT_NAME"
 descriptors="$(discover-descriptors)"
@@ -43,8 +34,10 @@ fi
 curl -s -X POST \
     -F "token=${trigger_token}" \
     -F "ref=${trigger_branch}" \
-    -F "variables[ARTIFACT_SOURCE]=${project}" \
-    -F "variables[ARTIFACT_SOURCE_REF]=${ref}" \
+    -F "variables[ARTIFACT_SOURCE_PROJECT]=${project}" \
+    -F "variables[ARTIFACT_SOURCE_BRANCH]=${branch}" \
+    -F "variables[ARTIFACT_SOURCE_TAG]=${tag}" \
+    -F "variables[ARTIFACT_SOURCE_COMMIT]=${commit}" \
     -F "variables[ARTIFACT_DESCRIPTORS]=${descriptors}" \
     "$trigger_url" \
     | jq
