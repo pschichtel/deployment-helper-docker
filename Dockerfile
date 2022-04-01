@@ -15,6 +15,7 @@ COPY process-updates.sh /usr/local/bin/process-updates
 COPY json-to-env.sh /usr/local/bin/json-to-env
 COPY combine-env.sh /usr/local/bin/combine-env
 COPY offset-ports.sh /usr/local/bin/offset-ports
+COPY content-hash.sh /usr/local/bin/content-hash
 
 RUN mkdir /workspace
 WORKDIR /workspace
