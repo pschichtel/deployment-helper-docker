@@ -16,6 +16,7 @@ COPY json-to-env.sh /usr/local/bin/json-to-env
 COPY combine-env.sh /usr/local/bin/combine-env
 COPY offset-ports.sh /usr/local/bin/offset-ports
 COPY content-hash.sh /usr/local/bin/content-hash
+COPY replace-variable.sh /usr/local/bin/replace-variable
 
 RUN mkdir /workspace
 WORKDIR /workspace

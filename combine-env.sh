@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 if [ $# -le 0 ]
 then
     echo "No files to combine!" >&2
