@@ -2,7 +2,7 @@ FROM gcr.io/kaniko-project/executor:debug AS kaniko
 
 FROM alpine:edge
 
-RUN apk add --update --no-cache bash jq python3 docker-cli docker-compose git curl openssh vim tcpdump ca-certificates coreutils grep sed
+RUN apk add --update --no-cache bash jq python3 docker-cli docker-compose git curl openssh vim tcpdump ca-certificates coreutils grep sed gettext
 RUN apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing kubectl helm
 
 COPY --from=kaniko /kaniko/executor /usr/local/bin/kaniko
