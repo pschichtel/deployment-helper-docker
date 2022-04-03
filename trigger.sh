@@ -2,14 +2,7 @@
 
 set -euo pipefail
 
-if [ "${DEPLOYMENT_DEBUG:-}" = "true" ]
-then
-    set -x
-fi
-
-trigger_url="${DEPLOYMENT_PIPELINE_TRIGGER_URL?no trigger url}"
 trigger_token="${DEPLOYMENT_PIPELINE_TRIGGER_TOKEN:-"${CI_JOB_TOKEN:-}"}"
-trigger_branch="${DEPLOYMENT_PIPELINE_TRIGGER_BRANCH:-main}"
 
 if [ -r "$trigger_token" ]
 then
@@ -21,6 +14,15 @@ then
     echo "No trigger token available!" >&2
     exit 1
 fi
+
+# don't enable debugging earlier to avoid leaking the trigger token
+if [ "${DEPLOYMENT_DEBUG:-}" = "true" ]
+then
+    set -x
+fi
+
+trigger_url="${DEPLOYMENT_PIPELINE_TRIGGER_URL?no trigger url}"
+trigger_branch="${DEPLOYMENT_PIPELINE_TRIGGER_BRANCH:-main}"
 
 commit="${CI_COMMIT_SHA?no commit}"
 
@@ -37,13 +39,10 @@ elif [ -n "${CI_COMMIT_TAG:-}" ]
 then
     ref_type="tag"
     ref="${CI_COMMIT_TAG}"
-    set -x
-    git branch -a
     if [ -n "$(git branch -a "origin/${CI_DEFAULT_BRANCH}" --contains "refs/tags/${ref}")" ]
     then
         default_branch="true"
     fi
-    set +x
 elif [ -n "${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME:-}" ] && [ "${CI_MERGE_REQUEST_SOURCE_PROJECT_ID:-}" = "$CI_PROJECT_ID" ]
 then
     ref_type="branch"
@@ -71,6 +70,7 @@ then
     exit 1
 fi
 
+# disable debugging not later to avoid leaking the trigger token
 if [ "${DEPLOYMENT_DEBUG:-}" = "true" ]
 then
     set +x
