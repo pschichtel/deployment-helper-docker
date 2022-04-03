@@ -18,8 +18,23 @@ then
 fi
 
 commit="${CI_COMMIT_SHA?no commit}"
-branch="${CI_COMMIT_BRANCH:-}"
-tag="${CI_COMMIT_TAG:-}"
+
+if [ -n "${CI_COMMIT_BRANCH:-}" ]
+then
+    ref_type="branch"
+    ref="${CI_COMMIT_BRANCH}"
+elif [ -n "${CI_COMMIT_TAG:-}" ]
+then
+    ref_type="tag"
+    ref="${CI_COMMIT_TAG}"
+elif [ -n "${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME:-}" ] && [ "${CI_MERGE_REQUEST_SOURCE_PROJECT_ID:-}" = "$CI_PROJECT_ID" ]
+then
+    ref_type="branch"
+    ref="${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
+else
+    ref_type="commit"
+    ref="$commit"
+fi
 
 project="$CI_PROJECT_NAME"
 descriptors="$(discover-descriptors)"
@@ -35,8 +50,8 @@ curl -s -X POST \
     -F "token=${trigger_token}" \
     -F "ref=${trigger_branch}" \
     -F "variables[ARTIFACT_SOURCE_PROJECT]=${project}" \
-    -F "variables[ARTIFACT_SOURCE_BRANCH]=${branch}" \
-    -F "variables[ARTIFACT_SOURCE_TAG]=${tag}" \
+    -F "variables[ARTIFACT_SOURCE_REF_TYPE]=${ref_type}" \
+    -F "variables[ARTIFACT_SOURCE_REF]=${ref}" \
     -F "variables[ARTIFACT_SOURCE_COMMIT]=${commit}" \
     -F "variables[ARTIFACT_DESCRIPTORS]=${descriptors}" \
     "$trigger_url" \

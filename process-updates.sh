@@ -5,8 +5,8 @@ set -euo pipefail
 update_script="${1?no update script}"
 
 source_project="${ARTIFACT_SOURCE_PROJECT:-}"
-source_branch="${ARTIFACT_SOURCE_BRANCH:-}"
-source_tag="${ARTIFACT_SOURCE_TAG:-}"
+source_ref_type="${ARTIFACT_SOURCE_REF_TYPE:-}"
+source_ref="${ARTIFACT_SOURCE_REF:-}"
 source_commit="${ARTIFACT_SOURCE_COMMIT?no source commit}"
 
 if [ -z "$source_project" ]
@@ -15,9 +15,15 @@ then
     exit 1
 fi
 
-if [ -z "$source_branch" ]
+if [ -z "$source_ref_type" ]
 then
-    echo "No source branch given, the trigger source seems to have triggered from a DETACHED_HEAD: ${source_commit}"
+    echo "No source ref type given for commit ${source_commit}"
+    exit 1
+fi
+
+if [ -z "$source_ref" ]
+then
+    echo "No source ref given for commit ${source_commit}"
     exit 1
 fi
 
@@ -41,11 +47,7 @@ then
 fi
 
 echo "Project:   $source_project"
-echo "Branch:    $source_branch"
-if [ -n "$source_tag" ]
-then
-    echo "Tag:       $source_tag"
-fi
+echo "Ref:       $source_ref ($source_ref_type)"
 echo "Updates:   $(< "$updates_file")"
 
 update_token="$(< "${ENV_UPDATE_TOKEN?no update token}")"
@@ -74,7 +76,8 @@ update_env() {
     pushd "$(checkout_env "$env")"
     if [ -r "$artifacts_file" ]
     then
-        local tmp_file="$(mktemp)"
+        local tmp_file
+        tmp_file="$(mktemp)"
         jq -n \
             --slurpfile artifacts_slurp "$artifacts_file" \
             --slurpfile updates_slurp "$updates_file" \
@@ -88,7 +91,7 @@ update_env() {
             git config user.name 'Environment Update'
             git config user.email "environment-update@${CI_SERVER_HOST}"
             git add "$artifacts_file"
-            git commit -m "Environment updated from ${source_project} (branch ${source_branch})!"
+            git commit -m "Environment updated from ${source_project} (${source_ref_type} ${source_ref})!"
             git push
             echo 'done.'
         else
@@ -107,5 +110,6 @@ apply_updates() {
     update_env "$env" "$updates_file"
 }
 
+# shellcheck disable=SC1090
 source "$update_script"
 
