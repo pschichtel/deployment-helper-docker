@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+if [ "${DEPLOYMENT_DEBUG:-}" = "true" ]
+then
+    set -x
+fi
+
 trigger_url="${DEPLOYMENT_PIPELINE_TRIGGER_URL?no trigger url}"
 trigger_token="${DEPLOYMENT_PIPELINE_TRIGGER_TOKEN:-"${CI_JOB_TOKEN:-}"}"
 trigger_branch="${DEPLOYMENT_PIPELINE_TRIGGER_BRANCH:-main}"
@@ -19,7 +24,6 @@ fi
 
 commit="${CI_COMMIT_SHA?no commit}"
 
-set -x
 default_branch="false"
 if [ -n "${CI_COMMIT_BRANCH:-}" ]
 then
@@ -33,10 +37,16 @@ elif [ -n "${CI_COMMIT_TAG:-}" ]
 then
     ref_type="tag"
     ref="${CI_COMMIT_TAG}"
+    set -x
+    git status
+    git branch
+    git tag
+    git log --oneline
     if [ -n "$(git branch "${CI_DEFAULT_BRANCH}" --contains "refs/tags/${ref}")" ]
     then
         default_branch="true"
     fi
+    set +x
 elif [ -n "${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME:-}" ] && [ "${CI_MERGE_REQUEST_SOURCE_PROJECT_ID:-}" = "$CI_PROJECT_ID" ]
 then
     ref_type="branch"
@@ -53,7 +63,6 @@ else
         default_branch="true"
     fi
 fi
-set +x
 
 project="$CI_PROJECT_NAME"
 descriptors="$(discover-descriptors)"
@@ -63,6 +72,11 @@ if [ "$descriptor_count" = 0 ]
 then
     echo "No descriptors given!" >&2
     exit 1
+fi
+
+if [ "${DEPLOYMENT_DEBUG:-}" = "true" ]
+then
+    set +x
 fi
 
 curl -s -X POST \

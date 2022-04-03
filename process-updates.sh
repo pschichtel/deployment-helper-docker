@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+if [ "${DEPLOYMENT_DEBUG:-}" = "true" ]
+then
+    set -x
+fi
+
 update_script="${1?no update script}"
 
 source_project="${ARTIFACT_SOURCE_PROJECT:-}"
