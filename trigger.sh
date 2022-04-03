@@ -19,6 +19,7 @@ fi
 
 commit="${CI_COMMIT_SHA?no commit}"
 
+set -x
 default_branch="false"
 if [ -n "${CI_COMMIT_BRANCH:-}" ]
 then
@@ -32,7 +33,7 @@ elif [ -n "${CI_COMMIT_TAG:-}" ]
 then
     ref_type="tag"
     ref="${CI_COMMIT_TAG}"
-    if [ -n "$(git branch "${CI_DEFAULT_BRANCH}" --contains "refs/tags/${CI_COMMIT_TAG}")" ]
+    if [ -n "$(git branch "${CI_DEFAULT_BRANCH}" --contains "refs/tags/${ref}")" ]
     then
         default_branch="true"
     fi
@@ -47,11 +48,12 @@ then
 else
     ref_type="commit"
     ref="$commit"
-    if [ -n "$(git branch "${CI_DEFAULT_BRANCH}" --contains "${commit}")" ]
+    if [ -n "$(git branch "${CI_DEFAULT_BRANCH}" --contains "${ref}")" ]
     then
         default_branch="true"
     fi
 fi
+set +x
 
 project="$CI_PROJECT_NAME"
 descriptors="$(discover-descriptors)"
