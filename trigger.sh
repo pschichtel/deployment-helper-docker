@@ -39,7 +39,7 @@ then
     ref="${CI_COMMIT_TAG}"
     set -x
     git branch -a
-    if [ -n "$(git branch "${CI_DEFAULT_BRANCH}" --contains "refs/tags/${ref}")" ]
+    if [ -n "$(git branch -a "origin/${CI_DEFAULT_BRANCH}" --contains "refs/tags/${ref}")" ]
     then
         default_branch="true"
     fi
