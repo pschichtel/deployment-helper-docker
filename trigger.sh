@@ -19,21 +19,38 @@ fi
 
 commit="${CI_COMMIT_SHA?no commit}"
 
+default_branch="false"
 if [ -n "${CI_COMMIT_BRANCH:-}" ]
 then
     ref_type="branch"
     ref="${CI_COMMIT_BRANCH}"
+    if [ "${CI_COMMIT_BRANCH}" = "${CI_DEFAULT_BRANCH}" ]
+    then
+        default_branch="true"
+    fi
 elif [ -n "${CI_COMMIT_TAG:-}" ]
 then
     ref_type="tag"
     ref="${CI_COMMIT_TAG}"
+    if [ -n "$(git branch "${CI_DEFAULT_BRANCH}" --contains "refs/tags/${CI_COMMIT_TAG}")" ]
+    then
+        default_branch="true"
+    fi
 elif [ -n "${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME:-}" ] && [ "${CI_MERGE_REQUEST_SOURCE_PROJECT_ID:-}" = "$CI_PROJECT_ID" ]
 then
     ref_type="branch"
     ref="${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
+    if [ "${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}" = "${CI_DEFAULT_BRANCH}" ]
+    then
+        default_branch="true"
+    fi
 else
     ref_type="commit"
     ref="$commit"
+    if [ -n "$(git branch "${CI_DEFAULT_BRANCH}" --contains "${commit}")" ]
+    then
+        default_branch="true"
+    fi
 fi
 
 project="$CI_PROJECT_NAME"
@@ -53,6 +70,7 @@ curl -s -X POST \
     -F "variables[ARTIFACT_SOURCE_REF_TYPE]=${ref_type}" \
     -F "variables[ARTIFACT_SOURCE_REF]=${ref}" \
     -F "variables[ARTIFACT_SOURCE_COMMIT]=${commit}" \
+    -F "variables[ARTIFACT_SOURCE_DEFAULT_BRANCH]=${default_branch}" \
     -F "variables[ARTIFACT_DESCRIPTORS]=${descriptors}" \
     "$trigger_url" \
     | jq

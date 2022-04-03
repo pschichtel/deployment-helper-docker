@@ -8,6 +8,7 @@ source_project="${ARTIFACT_SOURCE_PROJECT:-}"
 source_ref_type="${ARTIFACT_SOURCE_REF_TYPE:-}"
 source_ref="${ARTIFACT_SOURCE_REF:-}"
 source_commit="${ARTIFACT_SOURCE_COMMIT?no source commit}"
+source_on_default_branch="${ARTIFACT_SOURCE_DEFAULT_BRANCH:-"false"}"
 
 if [ -z "$source_project" ]
 then
@@ -46,9 +47,15 @@ then
     exit 0
 fi
 
-echo "Project:   $source_project"
-echo "Ref:       $source_ref ($source_ref_type)"
-echo "Updates:   $(< "$updates_file")"
+echo    "Project:   $source_project"
+echo -n "Ref:       $source_ref_type $source_ref"
+if [ "$source_on_default_branch" = "true" ]
+then
+    echo " (on default branch)"
+else
+    echo ""
+fi
+echo    "Updates:   $(< "$updates_file")"
 
 update_token="$(< "${ENV_UPDATE_TOKEN?no update token}")"
 update_token_name="${ENV_UPDATE_TOKEN_NAME?no update token name}"
