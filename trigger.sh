@@ -38,10 +38,7 @@ then
     ref_type="tag"
     ref="${CI_COMMIT_TAG}"
     set -x
-    git status
-    git branch
-    git tag
-    git log --oneline
+    git branch -a
     if [ -n "$(git branch "${CI_DEFAULT_BRANCH}" --contains "refs/tags/${ref}")" ]
     then
         default_branch="true"
