@@ -2,8 +2,16 @@ FROM gcr.io/kaniko-project/executor:debug AS kaniko
 
 FROM alpine:edge
 
-RUN apk add --update --no-cache bash jq python3 docker-cli docker-compose git curl openssh vim tcpdump ca-certificates coreutils grep sed gettext socat
+ARG JIB_CLI_VERSION=0.10.0
+
+RUN apk add --update --no-cache bash jq python3 docker-cli docker-compose git curl openssh vim tcpdump ca-certificates coreutils grep sed gettext socat openjdk17-jre-headless
 RUN apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing kubectl helm
+
+RUN curl -sSL -o jib.zip "https://github.com/GoogleContainerTools/jib/releases/download/v${JIB_CLI_VERSION}-cli/jib-jre-${JIB_CLI_VERSION}.zip" \
+    && unzip jib.zip  \
+    && rm jib.zip \
+    && mv "jib-${JIB_CLI_VERSION}" /opt/jib \
+    && ln -s /opt/jib/bin/jib /usr/local/bin/jib
 
 COPY --from=kaniko /kaniko/executor /usr/local/bin/kaniko
 COPY --from=kaniko /kaniko/warmer /usr/local/bin/warmer
