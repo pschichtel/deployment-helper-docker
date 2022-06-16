@@ -29,3 +29,5 @@ COPY replace-variable.sh /usr/local/bin/replace-variable
 RUN mkdir /workspace
 WORKDIR /workspace
 
+RUN rm -Rf /var/spool
+
