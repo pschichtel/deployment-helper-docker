@@ -1,6 +1,6 @@
-FROM gcr.io/kaniko-project/executor:v1.8.1-debug AS kaniko
+FROM gcr.io/kaniko-project/executor:v1.9.0-debug AS kaniko
 
-FROM alpine:edge
+FROM alpine:3.16.2
 
 ARG JIB_CLI_VERSION=0.10.0
 
