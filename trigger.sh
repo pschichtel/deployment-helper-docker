@@ -76,6 +76,23 @@ then
     set +x
 fi
 
+extra_options=()
+
+if [ -n "${TRIGGER_FORWARD_VARIABLES:-}" ]
+then
+    readarray -d variable_names ',' <<< "$TRIGGER_FORWARD_VARIABLES"
+    for name in "${variable_names[@]}"
+    do
+        # this effectively trims linebreaks
+        name="$(echo "$name")"
+        variable_value="${!name}"
+        if [ -n "$variable_value" ]
+        then
+            extra_options+=(-F "variables[${name}]=${variable_value}")
+        fi
+    done
+fi
+
 curl -s -X POST \
     -F "token=${trigger_token}" \
     -F "ref=${trigger_branch}" \
@@ -85,6 +102,7 @@ curl -s -X POST \
     -F "variables[ARTIFACT_SOURCE_COMMIT]=${commit}" \
     -F "variables[ARTIFACT_SOURCE_DEFAULT_BRANCH]=${default_branch}" \
     -F "variables[ARTIFACT_DESCRIPTORS]=${descriptors}" \
+    "${extra_options[@]}" \
     "$trigger_url" \
     | jq
 
