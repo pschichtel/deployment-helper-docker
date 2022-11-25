@@ -80,7 +80,7 @@ extra_options=()
 
 if [ -n "${TRIGGER_FORWARD_VARIABLES:-}" ]
 then
-    readarray -d variable_names ',' <<< "$TRIGGER_FORWARD_VARIABLES"
+    readarray -d ',' variable_names <<< "$TRIGGER_FORWARD_VARIABLES"
     for name in "${variable_names[@]}"
     do
         # this effectively trims linebreaks
