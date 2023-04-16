@@ -32,5 +32,3 @@ RUN adduser -S -h /workspace -u 1000 deploy \
 
 WORKDIR /workspace
 
-USER deploy
-
