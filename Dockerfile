@@ -11,6 +11,8 @@ RUN curl -sSL -o jib.zip "https://github.com/GoogleContainerTools/jib/releases/d
     && mv "jib-${JIB_CLI_VERSION}" /opt/jib \
     && ln -s /opt/jib/bin/jib /usr/local/bin/jib
 
+COPY COPY podman/storage.conf /etc/containers/storage.conf
+
 COPY trigger.sh /usr/local/bin/trigger
 COPY discover-descriptors.sh /usr/local/bin/discover-descriptors
 COPY process-updates.sh /usr/local/bin/process-updates
