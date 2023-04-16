@@ -1,3 +1,4 @@
+FROM quay.io/containers/podman:latest AS upstream
 FROM alpine:3.17.3
 
 ARG JIB_CLI_VERSION=0.12.0
@@ -10,6 +11,8 @@ RUN curl -sSL -o jib.zip "https://github.com/GoogleContainerTools/jib/releases/d
     && rm jib.zip \
     && mv "jib-${JIB_CLI_VERSION}" /opt/jib \
     && ln -s /opt/jib/bin/jib /usr/local/bin/jib
+
+COPY --from=upstream /etc/containers/storage.conf /etc/containers/storage.conf
 
 COPY trigger.sh /usr/local/bin/trigger
 COPY discover-descriptors.sh /usr/local/bin/discover-descriptors
