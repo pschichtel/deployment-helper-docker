@@ -23,7 +23,9 @@ COPY offset-ports.sh /usr/local/bin/offset-ports
 COPY content-hash.sh /usr/local/bin/content-hash
 COPY replace-variable.sh /usr/local/bin/replace-variable
 
-RUN adduser -S -h /workspace -u 1000 deploy
+RUN adduser -S -h /workspace -u 1000 deploy \
+ && echo "deploy:100000:65536" > /etc/subuid \
+ && echo "deploy:100000:65536" > /etc/subgid
 
 WORKDIR /workspace
 
