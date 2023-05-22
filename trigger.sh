@@ -93,7 +93,7 @@ then
     done
 fi
 
-curl -s -X POST \
+curl -s -L -X POST \
     -F "token=${trigger_token}" \
     -F "ref=${trigger_branch}" \
     -F "variables[ARTIFACT_SOURCE_PROJECT]=${project}" \
