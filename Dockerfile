@@ -19,6 +19,9 @@ COPY combine-env.sh /usr/local/bin/combine-env
 COPY offset-ports.sh /usr/local/bin/offset-ports
 COPY content-hash.sh /usr/local/bin/content-hash
 COPY replace-variable.sh /usr/local/bin/replace-variable
+COPY git-credential-env.sh /usr/local/bin/git-credential-env
+
+RUN git config --system credential.helper /usr/local/bin/git-credential-env
 
 ENV STORAGE_DRIVER="vfs"
 
