@@ -1,4 +1,4 @@
-FROM alpine:3.20
+FROM alpine:3.21
 
 ARG JIB_CLI_VERSION=0.13.0
 
