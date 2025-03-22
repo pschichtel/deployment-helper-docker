@@ -1,3 +1,5 @@
+FROM gcr.io/kaniko-project/executor:v1.23.2-debug AS kaniko
+
 FROM alpine:3.21
 
 ARG JIB_CLI_VERSION=0.13.0
@@ -10,6 +12,10 @@ RUN curl -sSL -o jib.zip "https://github.com/GoogleContainerTools/jib/releases/d
     && rm jib.zip \
     && mv "jib-${JIB_CLI_VERSION}" /opt/jib \
     && ln -s /opt/jib/bin/jib /usr/local/bin/jib
+
+COPY --from=kaniko /kaniko/executor /usr/local/bin/kaniko
+COPY --from=kaniko /kaniko/warmer /usr/local/bin/warmer
+COPY --from=kaniko /kaniko/docker-credential-* /usr/local/bin/
 
 COPY trigger.sh /usr/local/bin/trigger
 COPY discover-descriptors.sh /usr/local/bin/discover-descriptors
