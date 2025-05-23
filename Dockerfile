@@ -1,4 +1,4 @@
-FROM gcr.io/kaniko-project/executor:v1.23.2-debug AS kaniko
+FROM gcr.io/kaniko-project/executor:v1.24.0-debug AS kaniko
 
 FROM docker.io/library/alpine:3.21.3
 
