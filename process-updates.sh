@@ -72,7 +72,7 @@ mkdir -p "$envs_base_dir" || echo "Envs dir already exists"
 trigger_pipeline() {
     local branch="${1?no branch}"
 
-    curl -X POST \
+    curl -s -X POST \
         -F "token=${update_token}" \
         -F "ref=${branch}" \
         -F "variables[TRIGGERED_BY_PIPELINE]=${CI_PIPELINE_ID}" \
@@ -121,6 +121,7 @@ update_env() {
             git push
             if [ "$explicitly_trigger_pipeline" = 'true' ]
             then
+                echo "Triggering the env pipeline explicitly as requested..."
                 trigger_pipeline "$env"
             fi
             echo 'done.'
