@@ -15,6 +15,8 @@ source_ref="${ARTIFACT_SOURCE_REF:-}"
 source_commit="${ARTIFACT_SOURCE_COMMIT?no source commit}"
 source_on_default_branch="${ARTIFACT_SOURCE_DEFAULT_BRANCH:-"false"}"
 
+explicitly_trigger_pipeline="${EXPLICITLY_TRIGGER_PIPELINE:-"false"}"
+
 if [ -z "$source_project" ]
 then
     echo "No source project given!"
@@ -67,6 +69,18 @@ update_token_name="${ENV_UPDATE_TOKEN_NAME?no update token name}"
 envs_base_dir="envs"
 mkdir -p "$envs_base_dir" || echo "Envs dir already exists"
 
+trigger_pipeline() {
+    local branch="${1?no branch}"
+
+    curl -X POST \
+        -F "token=${update_token}" \
+        -F "ref=${branch}" \
+        -F "variables[TRIGGERED_BY_PIPELINE]=${CI_PIPELINE_ID}" \
+        -F "variables[TRIGGERED_COMMIT]=${CI_COMMIT_SHA}" \
+        "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/trigger/pipeline"
+
+}
+
 checkout_env() {
     local env="${1?no env}"
     local repo_url="https://${update_token_name}:${update_token}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}"
@@ -105,6 +119,10 @@ update_env() {
             git add "$artifacts_file"
             git commit -m "Environment updated from ${source_project} (${source_ref_type} ${source_ref})!"
             git push
+            if [ "$explicitly_trigger_pipeline" = 'true' ]
+            then
+                trigger_pipeline "$env"
+            fi
             echo 'done.'
         else
             echo "Nothing actually changed with this update."
