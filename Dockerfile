@@ -1,6 +1,6 @@
 FROM gcr.io/kaniko-project/executor:v1.24.0-debug AS kaniko
 
-FROM docker.io/library/alpine:3.23.0
+FROM docker.io/library/alpine:3.23.2
 
 ARG JIB_CLI_VERSION=0.13.0
 
