@@ -4,7 +4,7 @@ FROM docker.io/library/alpine:3.23.2
 
 ARG JIB_CLI_VERSION=0.13.0
 
-RUN apk add --update --no-cache bash jq yq python3 docker-cli docker-compose git curl openssh vim tcpdump ca-certificates coreutils grep sed gettext socat openjdk17-jre-headless helm strace podman fuse-overlayfs tar zip
+RUN apk add --update --no-cache bash jq yq python3 docker-cli docker-compose git curl openssh vim tcpdump ca-certificates coreutils grep sed gettext socat openjdk17-jre-headless helm strace podman fuse-overlayfs tar zip moreutils
 RUN apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/community kubectl
 
 RUN curl -sSL -o jib.zip "https://github.com/GoogleContainerTools/jib/releases/download/v${JIB_CLI_VERSION}-cli/jib-jre-${JIB_CLI_VERSION}.zip" \
